@@ -116,7 +116,7 @@ Config.Prefix = 'char' -- ESX only
 Config.PreviewSpawn = vector3(-1037.59, -2736.90, 20.16)
 
 Config.cam = true
-Config.ShowLogo = true
+Config.ShowLogo = false
 Config.PreviewAnimation = true
 
 Config.CameraIntro = {
@@ -146,9 +146,9 @@ Config.CameraIntro = {
 -- INTRO MUSIC
 -- Uses a local audio file from web/sound/.
 -------------------------------------------------------------------
-Config.bgmusic = false
-Config.IntroSound = 'sound/intro.mp3'
-Config.IntroVolume = 0.5
+Config.bgmusic = true
+Config.IntroSound = 'sound/bgmusic.mp3'
+Config.IntroVolume = 0.3
 
 -------------------------------------------------------------------
 -- ANIMATIONS
