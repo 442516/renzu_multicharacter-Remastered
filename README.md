@@ -1,4 +1,4 @@
-# renzu_multicharacter
+# renzu_multicharacter-Remastered
 
 A community-maintained continuation of **renzu_multicharacter**.
 
