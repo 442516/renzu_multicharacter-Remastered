@@ -1,123 +1,166 @@
-# 👯 renzu_multicharacter-Remastered
-Hi, i want to share this new resource :heart: 
-Fivem - ESX &amp; QBCORE Multicharacters
+# renzu_multicharacter
+
+A community-maintained continuation of **renzu_multicharacter**.
+
+This project is based on the original resource by **renzu**. The original character-selection UI and general flow are kept as the foundation. The work here focuses on keeping the resource usable on newer FiveM setups and separating framework, appearance, and spawn integrations from the main code.
+
+This is a remaster and maintenance project, not a claim of original authorship.
 
 ![image](https://user-images.githubusercontent.com/82306584/204663183-47535b6d-1f4c-4a4a-9bff-7f9132dcd50b.png)
 
-# :boom: Feature
-- Support ESX and QBCORE
-- ESX Legacy Standard Multicharacter Logic using (char) as prefix
-- Intro Cameras and BG music
-- Character Deletion
-- Support Showing Your custom Logo
-- Builtin Character Registration
-- Supports Spawn Selector (by default this uses my renzu_spawn as a Selector)
-- Supports Latest skinchanger & fivemappearance or qb-clothing
-- Supports /relog command (logout)
-- Supports Updating Slots number via config or commands. there is no maximum number but 10-20 is good.
-- Support Starter items
-- Player States on UI
+## Features
 
-# 🕹️ Commands
-- /relog (logout)
-- /updatecharslots (update the total of slots) ex. /updatecharslots ID 10
+- ESX, QBCore, and QBox support.
+- Automatic framework detection, with manual configuration available.
+- Appearance support for:
+  - `rcore_clothing`
+  - `illenium-appearance`
+  - `fivem-appearance`
+  - `qb-clothing`
+  - `esx_skin`
+  - `skinchanger`
+- Configurable spawn handling:
+  - built-in `renzu_multicharacter` selector
+  - `renzu_spawn`
+  - `qb-spawn`
+  - `qbx_spawn`
+  - `none`
+- Local intro music through the NUI page.
+- Character position saving on relog and disconnect.
+- Framework starter items with fallback items.
+- Optional logo, camera, and preview animation settings.
+- Locale strings in `shared/locale.lua`.
+- Nationality data in `shared/nationalities.json`.
+- Framework, appearance, and spawn integrations kept in bridge files.
 
-# 👦🏻 Skin Resource
-- Support skinchanger, fivemappearance, illenium-appearance, qb-clothing
+## Original flow
 
-# Skin Menus / Character Creator Support
-- we include multiple resource for each skin resource and you can add more if yours is missing.
+The original character-selection experience remains the main focus of this resource.
+
+Character selection, character creation, deletion, the preview camera, registration, and the general UI flow are intentionally kept close to the original version.
+
+The goal is to modernize the resource without turning it into a completely different multicharacter system.
+
+## Configuration
+
+The main settings are in `config.lua`.
+
+```lua
+Config.Framework = 'auto'
+Config.Appearance = 'auto'
+Config.SpawnSystem = 'renzu_multicharacter'
 ```
-Config.SkinMenus = {
-	['skinchanger'] = {
-		['esx_skin'] = {event = 'esx_skin:openSaveableMenu', use = true},
-		['VexCreator'] = {event = 'VexCreator:loadCreator', use = false},
-		['cui_character'] = {event = 'cui_character:open', use = false},
-		['example_resource'] = {exports = 'exports.example:Creator', event = nil, use = false}, -- example support exports
-	},
-	['fivemappearance'] = {}, -- is there any creator uses fivemappearance? i will leave this todo for now
-	['qb-clothing'] = {
-		['qb-clothing'] = { event = 'qb-clothing:client:openMenu', use = true},
-	},
-}
-```
 
-# #️⃣ Player States in UI
+Use `auto` to detect a supported resource that is running, or set a specific value manually.
+
+New characters use `Config.NewCharacterSpawn` when `Config.UseNewCharacterSpawn` is enabled. Set that option to `false` if the selected external spawn system should handle new-character placement instead.
+
+## Spawn systems
+
+The available spawn modes are:
+
+- `renzu_multicharacter` — use the built-in selector.
+- `renzu_spawn` — use the standalone `renzu_spawn` resource.
+- `qb-spawn` — use QBCore's spawn resource.
+- `qbx_spawn` — use the QBox-compatible spawn integration.
+- `none` — do not open a spawn selector. The resource fires `renzu_multicharacter:spawnRequested` instead.
+
+The `qbx_spawn` integration should be tested against the exact QBox version used by your server.
+
+## Player states
+
 ![image](https://user-images.githubusercontent.com/82306584/204690922-e62e1043-62c1-4393-a918-43131e0a75f2.png)
 
-[details="States Information"]
-- this shows the current state of player if its set manually. (ex. shows if player is dead)
-- callbacks are triggered once player has been login.
-- sample use case: register state if player is in vehicle'
-```
+Character list cards can show a badge for a player's current state (dead, in a vehicle, admin, cuffed, and so on) once that state is set. The `RegisterStates` export from the original resource still works the same way:
+
+```lua
 exports.renzu_multicharacter:RegisterStates('invehicle', function()
- 	if not lib then return end -- ox_lib
- 	print('registered')
- 	lib.onCache('vehicle', function(value)
- 		print(value)
- 		LocalPlayer.state:set('invehicle',value and {net = NetworkGetNetworkIdFromEntity(value) or false},true)
- 	end)
-end,false) -- set spawn selector true or false
-```
-- and once the player accidentaly logout, once the player login again, they will automatically spawn on the vehicle even if its moving.
-- there could be more use case. like if player is in jail or hospital, community service you could potentially disable spawn selector for ex.
-- more use case is if player is in apartment or housing. you could preload the house while the player is respawning.
-- set manualy
-
-```
- 		LocalPlayer.state:set('isdead',value,true)
-```
-[/details]
-
-
-# 🛠️ install
-
-
-[details="Installation"]
--  make sure this config from esx is setup this way
-```
-Config.Multichar                = true -- Enable support for esx_multicharacter
-Config.Identity                 = true -- Select a characters identity data before they have loaded in (this happens by default with multichar)
+	if not lib then return end
+	lib.onCache('vehicle', function(value)
+		LocalPlayer.state:set('invehicle', value and {net = NetworkGetNetworkIdFromEntity(value)} or false, true)
+	end)
+end, false)
 ```
 
-- verify your using ESX legacy or latest QBCORE
-- stop esx_multicharacter
-- stop esx_identity or keep it
-- stop qb-multicharacters
-- stop qb-spawn if your are going to use my spawn resource. renzu_spawn
+## Commands
 
-# esx sql column dependencies
-- make sure you have this skin column from users @ esx_skin sql
-``` 
-ALTER TABLE `users` ADD COLUMN `skin` LONGTEXT NULL DEFAULT NULL;
-```
-- make sure you have this column from users @ esx_identity sql
-```
-ALTER TABLE `users`
-	ADD COLUMN `firstname` VARCHAR(16) NULL DEFAULT NULL,
-	ADD COLUMN `lastname` VARCHAR(16) NULL DEFAULT NULL,
-	ADD COLUMN `dateofbirth` VARCHAR(10) NULL DEFAULT NULL,
-	ADD COLUMN `sex` VARCHAR(1) NULL DEFAULT NULL,
-	ADD COLUMN `height` INT NULL DEFAULT NULL
-;
-```
+- `/relog` — return to character selection.
+- `/updatecharslots <id> <slots>` — update a player's character-slot count. Permission handling comes from the active framework.
 
-# qbcore sql 
-- if you are recently using qb-multicharacters there should be no sql missing
-[/details]
+## Requirements
 
+Required:
 
+- `oxmysql`
+- One supported framework:
+  - `es_extended`
+  - `qb-core`
+  - `qbx_core`
 
-# ⛓️ Dependency
-- [ESX](https://github.com/esx-framework/esx-legacy) or [QBCORE](https://github.com/Qbox-project/qb-core)
-- [skinchanger](https://github.com/esx-framework/esx-legacy/tree/755bb0f8aa9e1814d3db929c436ab1aa3c61f95b/%5Besx%5D/skinchanger) or [fivemappearance](https://github.com/wasabirobby/fivem-appearance) or [qb-clothing](https://github.com/Qbox-project/qb-clothing)
-- [xsound](https://github.com/Xogy/xsound) or [renzu_mp3](https://github.com/renzuzu/renzu_mp3) (for bg intro) (OPTIONAL)
-- [renzu_spawn](https://forum.cfx.re/t/renzu-spawn-character-spawn-selector/4959467) - for spawn selector (OPTIONAL)
+Use one supported appearance system if appearance creation/loading is enabled.
 
-# 🤝 compatibilites
-- this supports qb-spawn ( you need to disable spawnselector in config ) - by default qbcore is setup this way. so you can have your spawn in aparment, housing etc.. (temporary until i release my housing with apartments)
-- esx_kashacters identifier logic - this dont support the old multicharacter logic. its only support if your esx legacy is using char as prefix for multicharacters
-- skinchanger repos - this supports the skinchanger so this probably supports CUI characters too. since its a revamped skinchanger with creator ui.
+External spawn resources are only required when selected in `Config.SpawnSystem`.
 
-# :heart:  contribution
-if you found issues or enhancement idea you can post it here or [here](https://github.com/renzuzu/renzu_multicharacter/issues)
+`qb-apartments` is optional.
+
+## ESX setup
+
+For ESX Legacy, enable multicharacter support in your ESX configuration.
+
+Older ESX databases may also need the character fields used by your setup, such as:
+
+- `skin`
+- `firstname`
+- `lastname`
+- `dateofbirth`
+- `sex`
+- `height`
+
+Check your existing `users` table before adding anything. Do not add duplicate columns.
+
+## QBCore / QBox setup
+
+QBCore and QBox use their own character data and identifiers.
+
+On QBox, make sure QBox's own character-selection screen is not running at the same time as this resource. Configure QBox to use an external character selector when required by your setup.
+
+## Appearance systems
+
+Appearance handling is separated from the main character-selection code.
+
+When `rcore_clothing` is selected, its appearance data is handled through the rcore bridge rather than being saved as a second framework skin record.
+
+The other supported appearance systems use their own supported skin format and bridge.
+
+If you add another appearance resource, add its implementation under `bridge/appearance/` instead of placing resource-specific calls throughout the main client code.
+
+## Project layout
+
+- `client/main.lua` — main client flow.
+- `server/main.lua` — main server flow.
+- `bridge/framework/` — framework integrations.
+- `bridge/appearance/` — appearance integrations.
+- `bridge/spawn/` — spawn integrations.
+- `shared/locale.lua` — UI translations.
+- `shared/nationalities.json` — nationality list.
+- `config_spawns.lua` — built-in spawn locations.
+- `web/` — NUI files and local audio.
+
+## Credits
+
+Original resource and concept by **renzu**:
+
+- https://github.com/renzuzu/renzu_multicharacter
+- https://forum.cfx.re/t/renzu-spawn-character-spawn-selector/4959467
+
+This repository is a community remaster of the original work. Please keep the original credit and license when modifying or redistributing it.
+
+## License
+
+GNU General Public License v3.0. See `LICENSE` for the full license text.
+
+## About this project
+
+The idea is simple: keep a good old resource alive without changing what made it useful.
+
+The original `renzu_multicharacter` had a clean character-selection flow. This project keeps that foundation and moves the framework, appearance, and spawn-specific work into separate bridges so the resource is easier to maintain over time.
